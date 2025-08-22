@@ -42,7 +42,7 @@ footer, header, hgroup, menu, nav, section {
     .gallery.style2.medium article .image img {
         display: block; /* Remove potential extra space below image */
         width: 100%;    /* Make image fill the container width */
-        height: 230px;   /* <<< SET A FIXED HEIGHT HERE (Adjust this value!) */
+        height: 330px;   /* <<< SET A FIXED HEIGHT HERE (Adjust this value!) */
                          /* Or, if using aspect-ratio on .image, set height: 100%; */
         object-fit: cover; /* Scale the image to cover the container, cropping if needed */
         object-position: center; /* Center the image within its frame */
