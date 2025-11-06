@@ -358,7 +358,9 @@
 
 		// Swipe variables
 		var touchStartX = 0;
+		var touchStartY = 0;
 		var touchEndX = 0;
+		var touchEndY = 0;
 		var isSwiping = false;
 
 		function getDistance(touch1, touch2) {
@@ -380,6 +382,9 @@
 				isSwiping = true;
 				isPinching = false;
 				touchStartX = e.touches[0].clientX;
+				touchStartY = e.touches[0].clientY;
+				touchEndX = touchStartX;
+				touchEndY = touchStartY;
 			}
 		}, { passive: false });
 
@@ -397,6 +402,7 @@
 				e.preventDefault();
 			} else if (isSwiping && e.touches.length === 1) {
 				touchEndX = e.touches[0].clientX;
+				touchEndY = e.touches[0].clientY;
 			}
 		}, { passive: false });
 
@@ -413,16 +419,19 @@
 				}
 			} else if (isSwiping && e.touches.length === 0) {
 				isSwiping = false;
-				var swipeDistance = touchEndX - touchStartX;
-				var minSwipeDistance = 50;
+				
+				var swipeDistanceX = touchEndX - touchStartX;
+				var swipeDistanceY = Math.abs(touchEndY - touchStartY);
+				var minSwipeDistance = 100;
 
-				if (Math.abs(swipeDistance) > minSwipeDistance) {
+				// Check if horizontal swipe is larger than vertical (to avoid accidental swipes when scrolling)
+				if (Math.abs(swipeDistanceX) > minSwipeDistance && Math.abs(swipeDistanceX) > swipeDistanceY * 2) {
 					var $gallery = $modal.parent();
 					var $allLinks = $gallery.find('a');
 					var currentIndex = modal._currentIndex || 0;
 					var newIndex;
 
-					if (swipeDistance > 0) {
+					if (swipeDistanceX > 0) {
 						// Swipe right - previous
 						newIndex = (currentIndex - 1 + $allLinks.length) % $allLinks.length;
 					} else {
@@ -434,14 +443,31 @@
 					scale = 1;
 					$img.css('transform', 'scale(1)');
 
-					// Close and open new image
-					$modal.removeClass('loaded visible');
+					// Change image without closing modal
+					var newHref = $allLinks.eq(newIndex).attr('href');
+					
+					// Fade out
+					$modal.removeClass('loaded');
+					
 					setTimeout(function() {
-						$allLinks.eq(newIndex).trigger('click');
-					}, 200);
+						// Change image
+						$modalImg.attr('src', newHref);
+						modal._currentIndex = newIndex;
+						
+						// Image will fade in automatically when loaded
+					}, 150);
 				}
 			}
 		});
+	});
+
+	// Add close button to modal
+	$('.gallery.lightbox .modal .inner').append('<button class="close-modal" aria-label="Close">×</button>');
+	
+	// Handle close button click
+	$('.gallery.lightbox .modal').on('click', '.close-modal', function(e) {
+		e.stopPropagation();
+		$(this).closest('.modal').trigger('click');
 	});
 
 })(jQuery);
