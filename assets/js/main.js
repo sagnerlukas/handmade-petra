@@ -419,7 +419,7 @@
 				}
 			} else if (isSwiping && e.touches.length === 0) {
 				isSwiping = false;
-				
+
 				var swipeDistanceX = touchEndX - touchStartX;
 				var swipeDistanceY = Math.abs(touchEndY - touchStartY);
 				var minSwipeDistance = 100;
@@ -445,29 +445,20 @@
 
 					// Change image without closing modal
 					var newHref = $allLinks.eq(newIndex).attr('href');
-					
+
 					// Fade out
 					$modal.removeClass('loaded');
-					
+
 					setTimeout(function() {
-						// Change image
-						$modalImg.attr('src', newHref);
+						// Change image - use $img instead of $modalImg
+						$img.attr('src', newHref);
 						modal._currentIndex = newIndex;
-						
-						// Image will fade in automatically when loaded
+
+						// Image will fade in automatically when loaded (via existing load handler)
 					}, 150);
 				}
 			}
 		});
-	});
-
-	// Add close button to modal
-	$('.gallery.lightbox .modal .inner').append('<button class="close-modal" aria-label="Close">×</button>');
-	
-	// Handle close button click
-	$('.gallery.lightbox .modal').on('click', '.close-modal', function(e) {
-		e.stopPropagation();
-		$(this).closest('.modal').trigger('click');
 	});
 
 })(jQuery);
