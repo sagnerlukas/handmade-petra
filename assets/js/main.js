@@ -350,6 +350,13 @@
 		var modal = this;
 		var $modal = $(modal);
 		var $img = $modal.find('img');
+		var $inner = $modal.find('.inner');
+
+		// Add loading spinner if it doesn't exist
+		if ($inner.find('.loading-spinner').length === 0) {
+			$inner.append('<div class="loading-spinner"></div>');
+		}
+		var $spinner = $inner.find('.loading-spinner');
 
 		// Pinch zoom variables
 		var scale = 1;
@@ -445,16 +452,23 @@
 
 					// Change image without closing modal
 					var newHref = $allLinks.eq(newIndex).attr('href');
-
-					// Fade out
+					
+					// Show loading spinner
+					$spinner.addClass('visible');
+					
+					// Fade out current image
 					$modal.removeClass('loaded');
-
+					
 					setTimeout(function() {
-						// Change image - use $img instead of $modalImg
+						// Change image
 						$img.attr('src', newHref);
 						modal._currentIndex = newIndex;
-
-						// Image will fade in automatically when loaded (via existing load handler)
+						
+						// Hide spinner when image loads (handled by existing load handler)
+						// We'll add a one-time load event specifically for hiding the spinner
+						$img.one('load', function() {
+							$spinner.removeClass('visible');
+						});
 					}, 150);
 				}
 			}
